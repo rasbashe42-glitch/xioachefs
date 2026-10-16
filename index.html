@@ -1082,7 +1082,7 @@
         // these values.  Only the favourite id list is persisted now.
         const INITIAL_CONTACTS = INITIAL.map(c => {const slug = (c.prenom || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); return {...c, photo: c.photo || (`photos/${slug}.png`)}});
         const FAVORITES_KEY = 'scout_contacts_favorites_v1';
-        let contacts = load(), view = 'grouped', section = 'all', gender = 'all', query = '', sortMode = 'default'; const META = {Baladins: ['Baladins', '6 à 8 ans · Le ruban vert des découvertes', '✧'], Louveteaux: ['Louveteaux', '8 à 12 ans · Peuple libre de la Jungle', '♣'], Éclaireurs: ['Éclaireurs', '12 à 16 ans · La troupe et la patrouille', '⌂'], Pios: ['Pionniers (Pios)', '16 à 18 ans · Le relais et les projets', '♨'], StaffDu: ["Staff d'Unité", 'Animation & Coordination générale', '⬟']};
+        let contacts = load(), view = 'grouped', section = 'all', gender = 'all', query = '', sortMode = 'default'; const META = {Baladins: ['Baladins', '6 à 8 ans · Le ruban vert des découvertes', '✧'], Louveteaux: ['Louveteaux', '8 à 12 ans · Peuple libre de la Jungle', '♣'], Éclaireurs: ['Éclaireurs', '12 à 17 ans · La troupe et la patrouille', '⌂'], Pios: ['Pionniers (Pios)', '17 à 18 ans · Le relais et les projets', '♨'], StaffDu: ["Staff d'Unité", 'Animation & Coordination générale', '⬟']};
         function load() {
      let favorites = new Set();
      try {
