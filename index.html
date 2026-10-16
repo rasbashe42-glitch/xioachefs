@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ScoutContacts — Annuaire & Sync</title>
+    <style>
+        :root {
+            --bg: #f7f6f2;
+            --surface: #fff;
+            --ink: #20221f;
+            --muted: #777a73;
+            --line: #e5e4df;
+            --accent: #079669;
+            --accent2: #f59e0b;
+            --shadow: 0 16px 40px #1b261018
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 90% -10%, #e1f3e9 0, transparent 28%), var(--bg);
+            color: var(--ink);
+            font: 14px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif
+        }
+
+        body.dark {
+            --bg: #111311;
+            --surface: #1b1e1b;
+            --ink: #f4f6f1;
+            --muted: #a1a69d;
+            --line: #30352f;
+            --shadow: 0 16px 40px #0005;
+            background: radial-gradient(circle at 90% -10%, #12352b 0, transparent 28%), var(--bg)
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer;
+            border: 0
+        }
+
+        a {
+            color: inherit
+        }
+
+        .wrap {
+            max-width: 1320px;
+            margin: auto;
+            padding: 0 24px
+        }
+
+        .top {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: color-mix(in srgb, var(--surface) 90%, transparent);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line)
+        }
+
+        .topin {
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: center
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #069a6a, #16b981, #f59e0b);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 23px;
+            box-shadow: 0 8px 18px #07966933
+        }
+
+        .brand h1 {
+            font-size: 20px;
+            margin: 0;
+            letter-spacing: -.04em
+        }
+
+        .brand p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .pill {
+            display: inline-flex;
+            padding: 4px 9px;
+            border-radius: 99px;
+            background: #d9f7e9;
+            color: #06724f;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 5px
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+
+        .btn {
+            padding: 9px 12px;
+            border-radius: 11px;
+            background: #efefeb;
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid transparent
+        }
+
+        .dark .btn {
+            background: #282d28
+        }
+
+        .btn:hover {
+            border-color: var(--accent)
+        }
+
+        .btn.primary {
+            background: #20231f;
+            color: white
+        }
+
+        .dark .btn.primary {
+            background: #f5f6f1;
+            color: #171a17
+        }
+
+        .btn.green {
+            background: var(--accent);
+            color: #fff
+        }
+
+        .btn.icon {
+            padding: 9px 10px
+        }
+
+        .main {
+            padding: 28px 0 52px
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap
+        }
+
+        .search {
+            position: relative;
+            flex: 1;
+            min-width: 280px
+        }
+
+        .search input {
+            width: 100%;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            border-radius: 16px;
+            padding: 13px 16px 13px 42px;
+            outline: none
+        }
+
+        .search input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px #07966918
+        }
+
+        .search span {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            font-size: 18px;
+            color: var(--muted)
+        }
+
+        .views {
+            display: flex;
+            background: #ecece8;
+            padding: 4px;
+            border-radius: 14px
+        }
+
+        .dark .views {
+            background: #252925
+        }
+
+        .views button {
+            background: transparent;
+            color: var(--muted);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .views button.active {
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: 0 2px 9px #00000010
+        }
+
+        .tabs {
+            display: flex;
+            gap: 7px;
+            overflow: auto;
+            padding: 18px 0 12px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .tab {
+            white-space: nowrap;
+            padding: 8px 11px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--surface);
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 12px
+        }
+
+        .tab.active {
+            background: #20231f;
+            color: #fff;
+            border-color: #20231f
+        }
+
+        .dark .tab.active {
+            background: #f5f6f1;
+            color: #171a17
+        }
+
+        .tab[data-sec="Baladins"].active {
+            background: #d9f7e9;
+            color: #06724f;
+            border-color: #9ce5c4
+        }
+
+        .tab[data-sec="Louveteaux"].active {
+            background: #fff0c9;
+            color: #8a5800;
+            border-color: #f3cd75
+        }
+
+        .tab[data-sec="Éclaireurs"].active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-color: #9ac2fa
+        }
+
+        .tab[data-sec="Pios"].active {
+            background: #ffe0e5;
+            color: #be123c;
+            border-color: #f8a6b8
+        }
+
+        .tab[data-sec="StaffDu"].active {
+            background: #eee5ff;
+            color: #6d28d9;
+            border-color: #c9affb
+        }
+
+        .subtools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 8px 0 22px;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .filters {
+            display: flex;
+            gap: 7px;
+            align-items: center
+        }
+
+        .filters button {
+            padding: 6px 9px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 11px
+        }
+
+        .filters button.active {
+            color: var(--ink);
+            font-weight: 800;
+            box-shadow: inset 0 -2px var(--accent)
+        }
+
+        .section {
+            margin: 18px 0 35px
+        }
+
+        .sectionhead {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 12px;
+            margin-bottom: 15px
+        }
+
+        .sectionhead .mark {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+            font-size: 20px
+        }
+
+        .section h2 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: -.04em
+        }
+
+        .section small {
+            color: var(--muted)
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            padding: 26px;
+            text-align: center;
+            box-shadow: 0 3px 12px #00000004;
+            transition: .2s;
+            position: relative
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: #07966980
+        }
+
+        .avatar {
+            width: 144px;
+            height: 144px;
+            border-radius: 50%;
+            margin: 10px auto 20px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #e7e9e4, #cbd0c8);
+            font-weight: 900;
+            font-size: 40px;
+            overflow: hidden
+        }
+
+        .avatar img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit
+        }
+
+        .avatar.avatar-mini {
+            margin: 0 7px 0 0;
+            display: inline-grid;
+            vertical-align: middle;
+            font-size: 12px;
+            border-radius: 10px
+        }
+
+        .dark .avatar {
+            background: linear-gradient(135deg, #3c453d, #566258)
+        }
+
+        .dark .avatar {
+            background: linear-gradient(135deg, #3c453d, #566258)
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 24px
+        }
+
+        .card p {
+            margin: 6px 0 0;
+            font-size: 16px
+        }
+
+
+        .totem {
+            color: var(--accent);
+            font: 700 16px ui-monospace, monospace;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .jungle {
+            color: #c98600;
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        .star {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: none;
+            color: #bbb;
+            font-size: 26px
+        }
+
+        .star.on {
+            color: #f59e0b
+        }
+
+        .tablewrap {
+            overflow: auto;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px
+        }
+
+        .table th {
+            background: #f0f0ec;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: .08em;
+            text-align: left;
+            padding: 12px
+        }
+
+        .dark .table th {
+            background: #242824
+        }
+
+        .table td {
+            padding: 12px;
+            border-top: 1px solid var(--line);
+            font-size: 12px
+        }
+
+        .table tr:hover {
+            background: #07966908
+        }
+
+        .mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: inline-grid;
+            place-items: center;
+            background: #e8ebe6;
+            font-weight: 800;
+            margin-right: 7px
+        }
+
+        .dark .mini {
+            background: #343b34
+        }
+
+        .actionsrow {
+            display: flex;
+            gap: 5px
+        }
+
+        .actionsrow button,
+        .actionsrow a {
+            padding: 6px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            text-decoration: none
+        }
+
+        .actionsrow button:hover,
+        .actionsrow a:hover {
+            background: #e7f8f0;
+            color: var(--accent)
+        }
+
+        .empty {
+            padding: 70px 20px;
+            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 20px
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: #18211a99;
+            backdrop-filter: blur(5px);
+            display: grid;
+            place-items: center;
+            padding: 16px;
+            z-index: 20
+        }
+
+        .dialog {
+            background: var(--surface);
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 23px;
+            max-width: 570px;
+            width: 100%;
+            max-height: 92vh;
+            overflow: auto;
+            box-shadow: 0 25px 70px #0004
+        }
+
+        .dialog h2 {
+            margin: 0 0 5px
+        }
+
+        .dialog .hint {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 0 0 18px
+        }
+
+        .close {
+            float: right;
+            background: none;
+            color: var(--muted);
+            font-size: 22px
+        }
+
+        .formgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px
+        }
+
+        .field {
+            margin-bottom: 12px
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: var(--muted)
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--ink);
+            outline: none
+        }
+
+        .field textarea {
+            min-height: 70px
+        }
+
+        .dialogfoot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--line);
+            padding-top: 15px;
+            margin-top: 15px
+        }
+
+        .note {
+            padding: 12px;
+            border-radius: 12px;
+            background: #fff5d7;
+            color: #815400;
+            font-size: 12px;
+            margin: 12px 0
+        }
+
+        .progress {
+            height: 9px;
+            background: var(--line);
+            border-radius: 99px;
+            overflow: hidden
+        }
+
+        .progress i {
+            display: block;
+            height: 100%;
+            background: var(--accent)
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 16px;
+            color: var(--muted);
+            font-size: 11px
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #20231f;
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 12px;
+            z-index: 40;
+            box-shadow: var(--shadow)
+        }
+
+        @media(max-width:720px) {
+            .wrap {
+                padding: 0 14px
+            }
+
+            .topin {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .actions {
+                justify-content: flex-start
+            }
+
+            .formgrid {
+                grid-template-columns: 1fr
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .brand p {
+                max-width: 280px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top">
+        <div class="wrap topin">
+            <div class="brand">
+                <div class="logo">✧</div>
+                <div>
+                    <h1>ScoutContacts <span class="pill" id="countPill"></span></h1>
+                    <p>Annuaire interactif · consultation en lecture seule</p>
+                </div>
+            </div>
+            <div class="actions"><button class="btn" id="exportBtn">⇩ Exporter</button><button class="btn icon"
+                    id="themeBtn" title="Mode sombre">☾</button></div>
+        </div>
+    </header>
+    <main class="wrap main">
+        <div class="toolbar">
+            <div class="search"><span>⌕</span><input id="search"
+                    placeholder="Rechercher par prénom, nom, totem, téléphone, email..."></div>
+            <div class="views"><button data-view="grouped" class="active">☷ Par section</button><button
+                    data-view="cards">▦ Grille</button><button data-view="table">☰ Liste</button></div>
+        </div>
+        <div class="tabs" id="tabs"></div>
+        <div class="subtools">
+            <div id="resultText"></div>
+            <div class="filters"><button data-gender="all" class="active">Tous</button><button
+                    data-gender="F">Filles</button><button data-gender="M">Garçons</button><button
+                    id="sortName">A–Z</button><button id="sortSection">Section</button></div>
+        </div>
+        <div id="content"></div>
+    </main>
+    <footer>
+        <div class="wrap">✧ <b>ScoutContacts</b> · <span id="footCount"></span> animateurs répertoriés <span
+                style="float:right">Données locales · exportables en CSV et vCard</span></div>
+    </footer>
+    <div id="overlay"></div>
+    <script>
+
+        const INITIAL = [{
+            "id": "scout-1",
+            "prenom": "Ines",
+            "nom": "Alonso",
+            "genre": "F",
+            "totem": "Tabby",
+            "section": "Baladins",
+            "tel": "+32 493 47 88 20",
+            "email": "inesalonso20081@gmail.com",
+            "orderIndex": 0
+        }, {
+            "id": "scout-2",
+            "prenom": "Lucie",
+            "nom": "Caspers",
+            "genre": "F",
+            "totem": "Eliomys",
+            "section": "Baladins",
+            "tel": "+32 478 75 06 03",
+            "email": "lu_caspers@outlook.com",
+            "orderIndex": 1
+        }, {
+            "id": "scout-3",
+            "prenom": "Alexandre",
+            "nom": "Amandt",
+            "genre": "M",
+            "totem": "Coendou",
+            "section": "Baladins",
+            "tel": "+32 468 36 64 00",
+            "email": "alexandre.amandt@gmail.com",
+            "orderIndex": 2
+        }, {
+            "id": "scout-4",
+            "prenom": "Charlotte",
+            "nom": "Scheyvaerts",
+            "genre": "F",
+            "totem": "Couagga",
+            "section": "Baladins",
+            "photo":"photos/charlotte-scheyvaerts.png",
+            "tel": "+32 497 18 71 05",
+            "email": "charlotte.scheyvaerts08@gmail.com",
+            "orderIndex": 3
+        }, {
+            "id": "scout-5",
+            "prenom": "Louise",
+            "nom": "Flandroy",
+            "genre": "F",
+            "totem": "Mink",
+            "section": "Baladins",
+            "tel": "+32 491 28 26 48",
+            "email": "lou.flandroy@icloud.com",
+            "orderIndex": 4
+        }, {
+            "id": "scout-6",
+            "prenom": "Thomas",
+            "nom": "Mestrez",
+            "genre": "M",
+            "totem": "Bongo",
+            "section": "Baladins",
+            "tel": "+32 471 05 18 97",
+            "email": "thomasmestrez08@gmail.com",
+            "orderIndex": 5
+        }, {
+            "id": "scout-7",
+            "prenom": "Charlotte",
+            "nom": "Houbart",
+            "genre": "F",
+            "totem": "Calura",
+            "section": "Baladins",
+            "photo":"photos/charlotte-houbart.png",
+            "tel": "+32 455 11 54 89",
+            "email": "charlotte.houbart@icloud.com",
+            "orderIndex": 6
+        }, {
+            "id": "scout-8",
+            "prenom": "Lise",
+            "nom": "Brouwers",
+            "genre": "F",
+            "totem": "Sika",
+            "totem2": "Akela",
+            "section": "Louveteaux",
+            "tel": "+32 493 46 91 52",
+            "email": "l.brouwers2007@gmail.com",
+            "isFavorite": true,
+            "orderIndex": 7
+        }, {
+            "id": "scout-9",
+            "prenom": "Eva",
+            "nom": "Toussaint",
+            "genre": "F",
+            "totem": "Isatis",
+            "totem2": "Chil",
+            "section": "Louveteaux",
+            "tel": "+32 472 31 09 07",
+            "email": "evajuliette.toussaint@gmail.com",
+            "orderIndex": 8
+        }, {
+            "id": "scout-10",
+            "prenom": "Alice",
+            "nom": "Gerard",
+            "genre": "F",
+            "totem": "Pika",
+            "totem2": "Sona",
+            "section": "Louveteaux",
+            "tel": "+32 468 45 86 53",
+            "email": "alicegerard0507@gmail.com",
+            "orderIndex": 9
+        }, {
+            "id": "scout-11",
+            "prenom": "Nils",
+            "nom": "Leclercq",
+            "genre": "M",
+            "totem": "Dama",
+            "totem2": "Kala Nag",
+            "section": "Louveteaux",
+            "tel": "+32 493 84 61 92",
+            "email": "nils@leclercq.be",
+            "orderIndex": 10
+        }, {
+            "id": "scout-12",
+            "prenom": "Quentin",
+            "nom": "Piette",
+            "genre": "M",
+            "totem": "Tazi",
+            "totem2": "Rama",
+            "section": "Louveteaux",
+            "tel": "+32 489 85 04 59",
+            "email": "quentinpiette200@gmail.com",
+            "orderIndex": 11
+        }, {
+            "id": "scout-13",
+            "prenom": "Julie",
+            "nom": "Bernard",
+            "genre": "F",
+            "totem": "Savannah",
+            "totem2": "Raksha",
+            "section": "Louveteaux",
+            "tel": "+32 493 47 42 75",
+            "email": "juliebernard06@icloud.com",
+            "orderIndex": 12
+        }, {
+            "id": "scout-14",
+            "prenom": "Mila",
+            "nom": "Toussaint",
+            "genre": "F",
+            "totem": "Sakini",
+            "totem2": "Baghera",
+            "section": "Louveteaux",
+            "tel": "+32 471 91 36 22",
+            "email": "mt.toussaint12@gmail.com",
+            "orderIndex": 13
+        }, {
+            "id": "scout-15",
+            "prenom": "Victor",
+            "nom": "Szalo",
+            "genre": "M",
+            "totem": "Tinker",
+            "totem2": "Ziggy",
+            "section": "Louveteaux",
+            "tel": "+32 496 31 92 66",
+            "email": "v.szalo@liege-1.be",
+            "orderIndex": 14
+        }, {
+            "id": "scout-16",
+            "prenom": "Diego",
+            "nom": "Perna",
+            "genre": "M",
+            "totem": "Nyala",
+            "totem2": "Phao",
+            "section": "Louveteaux",
+            "tel": "+32 493 72 70 08",
+            "email": "pernadiego37@gmail.com",
+            "orderIndex": 15
+        }, {
+            "id": "scout-17",
+            "prenom": "Remi",
+            "nom": "Gustin",
+            "genre": "M",
+            "totem": "Dorcopsis",
+            "section": "Éclaireurs",
+            "tel": "+32 493 36 38 67",
+            "email": "gstnremi@gmail.com",
+            "orderIndex": 16
+        }, {
+            "id": "scout-18",
+            "prenom": "Leo",
+            "nom": "Mambourg",
+            "genre": "M",
+            "totem": "Mangouste",
+            "section": "Éclaireurs",
+            "tel": "+32 492 39 59 02",
+            "email": "mambourgleo@gmail.com",
+            "orderIndex": 17
+        }, {
+            "id": "scout-19",
+            "prenom": "Jules",
+            "nom": "Haid",
+            "genre": "M",
+            "totem": "Bracco",
+            "section": "Éclaireurs",
+            "tel": "+32 470 75 51 29",
+            "email": "jules.haid@gmail.com",
+            "orderIndex": 18
+        }, {
+            "id": "scout-20",
+            "prenom": "Louis",
+            "nom": "Lambert",
+            "genre": "M",
+            "totem": "Pinscher",
+            "section": "Éclaireurs",
+            "tel": "+32 470 31 40 50",
+            "email": "louislambert1119@gmail.com",
+            "orderIndex": 19
+        }, {
+            "id": "scout-21",
+            "prenom": "Maxence",
+            "nom": "Wizley",
+            "genre": "M",
+            "totem": "Aubrac",
+            "section": "Éclaireurs",
+            "tel": "+32 471 96 52 02",
+            "email": "mwislez1@gmail.com",
+            "orderIndex": 20
+        }, {
+            "id": "scout-22",
+            "prenom": "Edgar",
+            "nom": "Bours",
+            "genre": "M",
+            "totem": "Foudi",
+            "section": "Éclaireurs",
+            "tel": "+32 479 16 76 23",
+            "email": "edgbours@gmail.com",
+            "orderIndex": 21
+        }, {
+            "id": "scout-23",
+            "prenom": "Antoine",
+            "nom": "Leruth",
+            "genre": "M",
+            "totem": "Birman",
+            "section": "Pios",
+            "tel": "+32 470 55 17 89",
+            "email": "antoineleruth2004@gmail.com",
+            "orderIndex": 22
+        }, {
+            "id": "scout-24",
+            "prenom": "Nicolas",
+            "nom": "Lambert",
+            "genre": "M",
+            "totem": "Highland",
+            "section": "Pios",
+            "tel": "+32 468 38 98 30",
+            "email": "nicolaslambert2006@gmail.com",
+            "orderIndex": 23
+        }, {
+            "id": "scout-25",
+            "prenom": "Pol",
+            "nom": "Nelis",
+            "genre": "M",
+            "totem": "Elanion",
+            "section": "Pios",
+            "tel": "+32 475 34 19 24",
+            "email": "pol.nelis@gmail.com",
+            "orderIndex": 24
+        }, {
+            "id": "scout-26",
+            "prenom": "Sophie",
+            "nom": "Kropps",
+            "genre": "F",
+            "totem": "Daman",
+            "section": "StaffDu",
+            "tel": "+32 497 27 09 84",
+            "email": "kroppsophie@gmail.com",
+            "isFavorite": true,
+            "orderIndex": 25
+        }, {
+            "id": "scout-27",
+            "prenom": "Bashe",
+            "nom": "Saint-hilaire",
+            "genre": "M",
+            "totem": "Coyote",
+            "section": "StaffDu",
+            "tel": "+32 484 377 702",
+            "email": "rasbashe42@gmail.com",
+            "isFavorite": true,
+            "orderIndex": 26
+        }, {
+            "id": "scout-28",
+            "prenom": "Jerome",
+            "nom": "Gribomont",
+            "genre": "M",
+            "totem": "Ecureuil",
+            "section": "StaffDu",
+            "tel": "+32 475 44 40 74",
+            "email": "jgribomont@hotmail.com",
+            "orderIndex": 27
+        }, {
+            "id": "scout-29",
+            "prenom": "Gregory",
+            "nom": "Devilliers",
+            "genre": "M",
+            "totem": "Auroch",
+            "section": "StaffDu",
+            "tel": "+32 492 65 54 93",
+            "email": "devillersgregory@gmail.com",
+            "orderIndex": 28
+        }, {
+            "id": "scout-30",
+            "prenom": "Laurence",
+            "nom": "Wathy",
+            "genre": "F",
+            "totem": "-",
+            "section": "StaffDu",
+            "tel": "+32 497 11 73 12",
+            "email": "lauwathy@gmail.com",
+            "orderIndex": 29
+        }, {
+            "id": "scout-31",
+            "prenom": "Benjamin",
+            "nom": "Vassen",
+            "genre": "M",
+            "totem": "Ocelot",
+            "section": "StaffDu",
+            "tel": "+32 485 98 08 41",
+            "email": "bvassen32@gmail.com",
+            "orderIndex": 30
+        }, {
+            "id": "scout-32",
+            "prenom": "Sara",
+            "nom": "Hody",
+            "genre": "F",
+            "totem": "Tayra",
+            "section": "StaffDu",
+            "tel": "+32 498 40 37 07",
+            "email": "sarahody@gmail.com",
+            "orderIndex": 31
+        }, {
+            "id": "scout-33",
+            "prenom": "Ariane",
+            "nom": "Damas",
+            "genre": "F",
+            "totem": "-",
+            "section": "StaffDu",
+            "tel": "+32 491 74 32 70",
+            "email": "arianedamas@hotmail.com",
+            "orderIndex": 32
+        }, {
+            "id": "scout-34",
+            "prenom": "Sebastien",
+            "nom": "Pirotte",
+            "genre": "M",
+            "totem": "-",
+            "section": "StaffDu",
+            "tel": "+32 497 21 01 39",
+            "email": "pirotte_s@hotmail.com",
+            "orderIndex": 33
+        }]; // INITIAL is the source of truth for contact fields, including photo.  Older
+// builds stored complete contacts in localStorage, which could silently replace
+        // these values.  Only the favourite id list is persisted now.
+        const INITIAL_CONTACTS = INITIAL.map(c => {const slug = (c.prenom || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); return {...c, photo: c.photo || (`photos/${slug}.png`)}});
+        const FAVORITES_KEY = 'scout_contacts_favorites_v1';
+        let contacts = load(), view = 'grouped', section = 'all', gender = 'all', query = '', sortMode = 'default'; const META = {Baladins: ['Baladins', '6 à 8 ans · Le ruban vert des découvertes', '✧'], Louveteaux: ['Louveteaux', '8 à 12 ans · Peuple libre de la Jungle', '♣'], Éclaireurs: ['Éclaireurs', '12 à 16 ans · La troupe et la patrouille', '⌂'], Pios: ['Pionniers (Pios)', '16 à 18 ans · Le relais et les projets', '♨'], StaffDu: ["Staff d'Unité", 'Animation & Coordination générale', '⬟']};
+        function load() {
+     let favorites = new Set();
+     try {
+         const saved = JSON.parse(localStorage.getItem(FAVORITES_KEY));
+         if (Array.isArray(saved)) favorites = new Set(saved)
+     } catch (e) {}
+     return INITIAL_CONTACTS.map(c => ({
+         ...c,
+         isFavorite: favorites.has(c.id) || c.isFavorite === true
+     }))
+ }
+
+ function saveFavorites() {
+     localStorage.setItem(FAVORITES_KEY, JSON.stringify(contacts.filter(c => c.isFavorite).map(c => c.id)))
+ }
+
+ function esc(x = '') {
+     return String(x).replace(/[&<>"']/g, c => ({
+         '&': '&amp;',
+         '<': '&lt;',
+         '>': '&gt;',
+         '"': '&quot;',
+         "'": '&#39;'
+     } [c]))
+ }
+
+ function initials(c) {
+     return (((c.prenom || '').trim()[0] || '') + ((c.nom || '').trim()[0] || '')).toUpperCase() || '?'
+ }
+
+ function avatarColor(c) {
+     let name = ((c.prenom || '') + ' ' + (c.nom || '')).trim(),
+         hash = 0;
+     for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+     return ['#087f5b', '#2563a8', '#b45309', '#be3455', '#6d4c9b', '#157a8a'][hash % 6]
+ }
+
+ function photoSrc(photo) {
+     const value = String(photo || '').trim();
+     if (!value) return ''; /* A bare filename is intentionally kept relative to index.html. */
+     return value
+ }
+
+ function renderAvatar(c, size = 152) {
+     let n = esc(initials(c)),
+         color = avatarColor(c),
+         style = `width:${size}px;height:${size}px;background:${color};color:#fff`,
+         photo = photoSrc(c.photo);
+     return `<div class="avatar${size <= 40 ? ' avatar-mini' : ''}" style="${style}" aria-label="${esc((c.prenom || '') + ' ' + (c.nom || ''))}">${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" data-initials="${n}" onerror="this.onerror=null;this.parentNode.classList.add('avatar-fallback');this.parentNode.textContent=this.dataset.initials">` : n}</div>`
+ }
+
+ function filtered() {
+     let list = contacts.filter(c => (section === 'all' || section === 'favorites' || c.section === section) && (section !== 'favorites' || c.isFavorite) && (gender === 'all' || c.genre === gender) && (!query || [c.prenom, c.nom, c.totem, c.totem2, c.tel, c.email, c.section].join(' ').toLowerCase().includes(query.toLowerCase())));
+     if (sortMode === 'name') list.sort((a, b) => (a.nom + ' ' + a.prenom).localeCompare(b.nom + ' ' + b.prenom));
+     if (sortMode === 'section') {
+         let order = Object.keys(META);
+         list.sort((a, b) => (order.indexOf(a.section) - order.indexOf(b.section)) || a.nom.localeCompare(b.nom));
+     }
+     return list
+ }
+
+ function renderTabs() {
+     let counts = {};
+     contacts.forEach(c => counts[c.section] = (counts[c.section] || 0) + 1);
+     let tabs = [`<button class="tab ${section === 'all' ? 'active' : ''}" data-sec="all">Tous <b>${contacts.length}</b></button>`];
+     Object.keys(META).forEach(k => tabs.push(`<button class="tab ${section === k ? 'active' : ''}" data-sec="${k}">${META[k][0]} <b>${counts[k] || 0}</b></button>`));
+     tabs.push(`<button class="tab ${section === 'favorites' ? 'active' : ''}" data-sec="favorites">★ Prioritaires <b>${contacts.filter(c => c.isFavorite).length}</b></button>`);
+     document.querySelector('#tabs').innerHTML = tabs.join('');
+     document.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => {
+         section = b.dataset.sec;
+         render()
+     })
+ }
+
+ function card(c) {
+     return `<article class="card" data-id="${esc(c.id)}"><button class="star ${c.isFavorite ? 'on' : ''}" data-star="${esc(c.id)}">★</button>${renderAvatar(c)}<h3>${esc(c.prenom)}</h3><h3>${esc(c.nom)}</h3>${c.totem && c.totem !== '-' ? `<p class="totem">${esc(c.totem)}</p>` : ''}${c.totem2 ? `<p class="jungle">${esc(c.totem2)}</p>` : ''}</article>`
+ }
+
+ function tableRow(c, i) {
+     let phone = esc(c.tel || ''),
+         email = esc(c.email || '');
+     return `<tr data-id="${esc(c.id)}"><td><button class="star ${c.isFavorite ? 'on' : ''}" data-star="${esc(c.id)}">★</button></td><td>${renderAvatar(c, 32)}<b>${esc(c.prenom)} ${esc(c.nom)}</b><small style="display:block;color:var(--muted)">${c.genre === 'F' ? 'Féminin' : 'Masculin'}</small></td><td><b class="totem">${esc(c.totem === '-' ? '' : c.totem || '')}</b><small class="jungle"> ${esc(c.totem2 || '')}</small></td><td><span class="pill">${esc(META[c.section]?.[0] || c.section)}</span></td><td><a href="tel:${phone}">☎ ${phone}</a></td><td><a href="mailto:${email}">${email}</a></td><td><div class="actionsrow"><a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}" target="_blank" title="WhatsApp">◉</a><a href="sms:${phone}" title="SMS">✉</a></div></td></tr>`
+ }
+
+ function render() {
+     document.body.classList.toggle('dark', localStorage.getItem('scout_theme') === 'dark');
+     document.querySelector('#countPill').textContent = contacts.length + ' animateurs';
+     document.querySelector('#footCount').textContent = contacts.length;
+     renderTabs();
+     let list = filtered();
+     document.querySelector('#resultText').textContent = `${list.length} contact${list.length > 1 ? 's' : ''} affiché${list.length > 1 ? 's' : ''}${list.length !== contacts.length ? ' (sur ' + contacts.length + ')' : ''}`;
+     document.querySelectorAll('[data-gender]').forEach(b => b.classList.toggle('active', b.dataset.gender === gender));
+     document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+     let out = '';
+     if (!list.length) out = `<div class="empty"><div style="font-size:38px">⌕</div><h2>Aucun contact trouvé</h2><p>Aucun animateur ne correspond à vos filtres.</p><button class="btn primary" onclick="clearFilters()">Réinitialiser les filtres</button></div>`;
+     else if (view === 'table') out = `<div class="tablewrap"><table class="table"><thead><tr><th>Priorité</th><th>Animateur</th><th>Totem</th><th>Section</th><th>Téléphone</th><th>Email</th><th>Actions</th></tr></thead><tbody>${list.map(tableRow).join('')}</tbody></table></div>`;
+     else if (view === 'cards') out = `<div class="grid">${list.map(card).join('')}</div>`;
+     else {
+         let keys = [...Object.keys(META), ...new Set(list.map(c => c.section))].filter((x, i, a) => a.indexOf(x) === i);
+         out = keys.map(k => {
+             let cs = list.filter(c => c.section === k);
+             if (!cs.length) return '';
+             let m = META[k] || [k, 'Section de l’unité', '•'];
+             return `<section class="section"><div class="sectionhead"><div class="mark">${m[2]}</div><div><h2>${m[0]} <span class="pill">${cs.length}</span></h2><small>${m[1]}</small></div></div><div class="grid">${cs.map(card).join('')}</div></section>`
+         }).join('')
+     }
+     document.querySelector('#content').innerHTML = out;
+     bindContent()
+ }
+
+ function bindContent() {
+     document.querySelectorAll('[data-star]').forEach(b => b.onclick = e => {
+         e.stopPropagation();
+         let c = contacts.find(x => x.id === b.dataset.star);
+         if (c) {
+             c.isFavorite = !c.isFavorite;
+             saveFavorites();
+             render()
+         }
+     });
+     document.querySelectorAll('.card').forEach(x => x.onclick = e => {
+         if (!e.target.closest('button')) openDetail(x.dataset.id)
+     });
+     document.querySelectorAll('tr[data-id]').forEach(x => x.onclick = e => {
+         if (!e.target.closest('a,button')) openDetail(x.dataset.id)
+     })
+ }
+
+ function clearFilters() {
+     query = '';
+     section = 'all';
+     gender = 'all';
+     sortMode = 'default';
+     document.querySelector('#search').value = '';
+     render()
+ }
+
+ function openDetail(id) {
+     let c = contacts.find(x => x.id === id);
+     show(`<div class="dialog"><button class="close" onclick="closeModal()">×</button><div style="text-align:center">${renderAvatar(c, 94)}<h2>${esc(c.prenom)} ${esc(c.nom)}</h2><p class="totem">${esc(c.totem || '')}${c.totem2 ? ' · ' + esc(c.totem2) : ''}</p><span class="pill">${esc(META[c.section]?.[0] || c.section)}</span></div><div class="note">${esc(c.notes || 'Contact scout · ' + (META[c.section]?.[1] || c.section))}</div><div class="field"><label>TÉLÉPHONE</label><a class="btn green" style="display:block;text-align:center" href="tel:${esc(c.tel)}">☎ ${esc(c.tel || 'Non renseigné')}</a></div><div class="field"><label>EMAIL</label><a class="btn" style="display:block;text-align:center" href="mailto:${esc(c.email)}">✉ ${esc(c.email || 'Non renseigné')}</a></div><div class="dialogfoot"><span></span><button class="btn primary" onclick="closeModal()">Fermer</button></div></div>`)
+ }
+
+ function show(x) {
+     document.querySelector('#overlay').innerHTML = '<div class="modal">' + x + '</div>'
+ }
+
+ function closeModal() {
+     document.querySelector('#overlay').innerHTML = ''
+ }
+
+ function download(content, name, type) {
+     let a = document.createElement('a');
+     a.href = URL.createObjectURL(new Blob([content], {
+         type
+     }));
+     a.download = name;
+     a.click();
+     setTimeout(() => URL.revokeObjectURL(a.href), 500)
+ }
+
+ function csv() {
+     let cols = ['Prénom', 'Nom', 'Genre', 'Totem', 'Totem 2', 'Section', 'Téléphone', 'Email', 'Photo', 'Favori', 'Notes'];
+     let rows = contacts.map(c => [c.prenom, c.nom, c.genre, c.totem, c.totem2, c.section, c.tel, c.email, c.photo, c.isFavorite ? 'Oui' : 'Non', c.notes].map(x => '"' + String(x || '').replace(/"/g, '""') + '"').join(';'));
+     download('﻿' + cols.join(';') + '\n' + rows.join('\n'), 'contacts-scouts.csv', 'text/csv;charset=utf-8')
+ }
+
+ function vcard() {
+     let out = contacts.map(c => `BEGIN:VCARD\nVERSION:3.0\nN:${c.nom};${c.prenom};;;\nFN:${c.prenom} ${c.nom}\nTEL;TYPE=CELL:${c.tel || ''}\nEMAIL:${c.email || ''}\nPHOTO:${c.photo || ''}\nORG:Scouts;${c.section}\nNOTE:Totem: ${c.totem || ''} | Section: ${c.section}\nEND:VCARD`).join('\n\n');
+     download(out, 'contacts-scouts.vcf', 'text/vcard;charset=utf-8')
+ }
+
+ document.querySelector('#exportBtn').onclick = () => {
+     let choice = prompt('Exporter : CSV ou VCF ?', 'CSV');
+     if (choice?.toLowerCase() === 'vcf') vcard();
+     else if (choice) csv()
+ };
+ document.querySelector('#themeBtn').onclick = () => {
+     localStorage.setItem('scout_theme', localStorage.getItem('scout_theme') === 'dark' ? 'light' : 'dark');
+     render()
+ };
+ document.querySelector('#search').oninput = e => {
+     query = e.target.value;
+     render()
+ };
+ document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
+     view = b.dataset.view;
+     render()
+ });
+ document.querySelectorAll('[data-gender]').forEach(b => b.onclick = () => {
+     gender = b.dataset.gender;
+     render()
+ });
+ document.querySelector('#sortName').onclick = () => {
+     sortMode = 'name';
+     render()
+ };
+ document.querySelector('#sortSection').onclick = () => {
+     sortMode = 'section';
+     render()
+ };
+ render();
+ 
+ </script>
+    <script type="module"
+        src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920"
+        integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA=="
+        data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}'
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
